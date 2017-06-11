@@ -23,6 +23,19 @@ public class KResultUpdater {
 				pst.setDouble(1, dis);
 				pst.setInt(2, i);
 				pst.executeUpdate();
+				
+				sql= "insert into k_means_point values(?,?,?)";
+				pst = conn.prepareStatement(sql);
+				for (int j=1;j<=i;j++){
+					double x = reader.nextDouble();
+					double y = reader.nextDouble();
+					pst.setInt(1, i);
+					pst.setDouble(2, x);
+					pst.setDouble(3, y);
+					pst.executeUpdate();
+				}
+				
+				pst.close();
 				reader.close();
 			}
 			stmt.close();

@@ -78,9 +78,46 @@ public class RankUpdater {
     		System.out.println("actor_rank failed");
 		}
 	}
+	
+	static void updateDirector(String path){
+		BufferedReader reader;
+		try {
+			Connection conn=new SqlConnector().getconnetion();
+			Statement stmt = conn.createStatement();
+			reader = new BufferedReader(new InputStreamReader(new FileInputStream(new File(path+"\\someResults\\variance-30min\\dirVar\\part-00000")),"utf-8"));
+			for (int i=1;i<3000;i++){
+				String line = reader.readLine();
+				int aid=i;
+				String aname=line.split(",")[0].replace("(", "");
+				double totalscore=Double.parseDouble(line.split(",")[1]);
+				int fans=(int)Double.parseDouble(line.split(",")[3]);
+				double averagescore=Double.parseDouble(line.split(",")[5].replace(")", ""));
+				String sql= "insert into director_rank values (?,?,?,?,?) on duplicate key update dname=?,totalscore=?,fans=?,averagescore=?";
+				PreparedStatement pst = conn.prepareStatement(sql);
+				pst.setInt(1, aid);
+				pst.setString(2, aname);
+				pst.setDouble(3, totalscore);
+				pst.setInt(4, fans);
+				pst.setDouble(5, averagescore);
+				pst.setString(6, aname);
+				pst.setDouble(7, totalscore);
+				pst.setInt(8, fans);
+				pst.setDouble(9, averagescore);
+				pst.executeUpdate();
+			}
+			reader.close();
+			stmt.close();
+            conn.close();
+    		System.out.println("director_rank updated");
+		} catch (Exception e) {
+			e.printStackTrace();
+    		System.out.println("director_rank failed");
+		}
+	}
 	static void updateAll(String path){
 		filepath=path;
 		updateMovie(path);
 		updateActor(path);
+		updateDirector(path);
 	}
 }
